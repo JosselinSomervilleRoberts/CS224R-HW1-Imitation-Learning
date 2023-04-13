@@ -120,7 +120,7 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
 
         # DONE: return the action that the policy prescribes
         distrib = self.forward(observation)
-        action = distrib.sample()
+        action = distrib.rsample()
         action = ptu.to_numpy(action)
         return action
 
@@ -165,10 +165,21 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         criterion = nn.CrossEntropyLoss() if self.discrete else nn.MSELoss()
         for i in range(observations.shape[0]):
             obs = observations[i]
-            pred_action = self.get_action(obs)
+            if len(obs.shape) > 1:
+                observation = obs
+            else:
+                observation = obs[None]
+
+            # DONE: return the action that the policy prescribes
+            distrib = self.forward(observation)
+            pred_action = distrib.rsample()
+            pred_action = pred_action.reshape(-1)
+
             action = actions[i]
+            action = ptu.from_numpy(action)
             loss = criterion(pred_action, action)
-            losses.append(loss)
+            # print("Action:", action, " / Pred:", pred_action, " / Loss:", loss)
+            losses = loss
             loss.backward()
             self.optimizer.step()
 
