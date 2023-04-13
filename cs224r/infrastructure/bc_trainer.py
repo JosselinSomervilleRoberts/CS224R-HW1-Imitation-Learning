@@ -20,7 +20,7 @@ from cs224r.infrastructure import pytorch_util as ptu
 from cs224r.infrastructure.logger import Logger
 from cs224r.infrastructure import utils
 from cs224r.policies.base_policy import BasePolicy
-from typing import List
+from typing import List, Tuple
 
 # how many rollouts to save as videos to tensorboard
 MAX_NVIDEO = 2

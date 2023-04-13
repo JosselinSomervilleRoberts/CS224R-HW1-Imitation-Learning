@@ -8,7 +8,7 @@ Functions to edit:
 """
 import numpy as np
 import time
-from typing import Dict, Tuple
+from typing import Tuple
 import gym
 from cs224r.policies.base_policy import BasePolicy
 from typing import List
