@@ -68,7 +68,7 @@ def sample_trajectory(env, policy: BasePolicy, max_path_length: int, render: boo
 
     return Path(obs, image_obs, acs, rewards, next_obs, terminals)
 
-def sample_trajectories(env: gym.env, policy: BasePolicy, min_timesteps_per_batch: int,
+def sample_trajectories(env: gym.Env, policy: BasePolicy, min_timesteps_per_batch: int,
     max_path_length: int, render: bool = False) -> Tuple[List[dict], int]:
     """
         Collect rollouts until we have collected min_timesteps_per_batch steps.
@@ -86,7 +86,7 @@ def sample_trajectories(env: gym.env, policy: BasePolicy, min_timesteps_per_batc
 
     return paths, timesteps_this_batch
 
-def sample_n_trajectories(env: gym.env, policy: BasePolicy, ntraj: int,
+def sample_n_trajectories(env: gym.Env, policy: BasePolicy, ntraj: int,
     max_path_length: int, render: bool = False) -> List[dict]:
     """
         Collect ntraj rollouts.
