@@ -159,23 +159,19 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
             dict: 'Training Loss': supervised learning loss
         """
         # DONE? update the policy and return the loss
-        loss = []
+        losses = []
+        criterion = nn.CrossEntropyLoss() if self.discrete else nn.MSELoss()
         for i in range(observations.shape[0]):
             obs = observations[i]
             pred_action = self.get_action(obs)
             action = actions[i]
-
-            # Compute loss
-            if self.discrete:
-                loss.append(int(action == pred_action))
-            else:
-                mse = nn.MSELoss()
-                loss.append(mse(action, pred_action))
-
-            # TODO: Train the network
+            loss = criterion(pred_action, action)
+            losses.append(loss)
+            loss.backward()
+            self.optimizer.step()
 
         return {
             # You can add extra logging information here, but keep this line
-            'Training Loss': ptu.to_numpy(loss),
+            'Training Loss': ptu.to_numpy(losses),
         }
 

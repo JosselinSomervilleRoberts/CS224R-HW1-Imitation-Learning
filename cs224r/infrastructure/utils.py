@@ -91,7 +91,7 @@ def sample_n_trajectories(env: gym.env, policy: BasePolicy, ntraj: int,
     """
         Collect ntraj rollouts.
 
-        TODO implement this function
+        DONE: implement this function
         Hint1: use sample_trajectory to get each path (i.e. rollout) that goes into paths
     """
     paths = []

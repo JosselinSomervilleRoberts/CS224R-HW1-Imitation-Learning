@@ -195,7 +195,7 @@ class BCTrainer:
             train_video_paths: paths which also contain videos for visualization purposes
         """
 
-        # TODO decide whether to load training data or use the current policy to collect more data
+        # DONE? decide whether to load training data or use the current policy to collect more data
         # HINT1: depending on if it's the first iteration or not, decide whether to either
             # (1) If it is the first iteration and training data exists, load it
             # In this case you can directly return as follows
@@ -210,8 +210,9 @@ class BCTrainer:
         print("\nCollecting data to be used for training...")
         paths, envsteps_this_batch = None, None
         if itr == 0 and load_initial_expertdata != None: # Case (1)
-            # TODO: Loaded paths
-            return loaded_paths, 0, None
+            with open(load_initial_expertdata, 'rb') as f:
+                loaded_paths = pickle.load(f)
+                return loaded_paths, 0, None
         elif load_initial_expertdata is None: # Case (2)
             envsteps_this_batch = self.params['batch_size_initial']
             paths = utils.sample_n_trajectories(self.env, collect_policy,
@@ -227,7 +228,7 @@ class BCTrainer:
         train_video_paths = None
         if self.log_video:
             print('\nCollecting train rollouts to be used for saving videos...')
-            ## TODO look in utils and implement sample_n_trajectories
+            ## DONE: look in utils and implement sample_n_trajectories
             train_video_paths = utils.sample_n_trajectories(self.env,
                 collect_policy, MAX_NVIDEO, MAX_VIDEO_LEN, True)
 
