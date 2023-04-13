@@ -139,6 +139,8 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         # return more flexible objects, such as a
         # `torch.distributions.Distribution` object. It's up to you!
 
+        observation = ptu.from_numpy(observation)
+
         distrib = None
         if self.discrete:
             logits = self.logits_na(observation)
