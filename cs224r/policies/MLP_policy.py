@@ -45,20 +45,19 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         Trains the policy with a supervised learning objective
     """
     def __init__(self,
-                 ac_dim,
-                 ob_dim,
-                 n_layers,
-                 size,
-                 discrete=False,
-                 learning_rate=1e-4,
-                 training=True,
-                 nn_baseline=False,
+                 ac_dim: int,
+                 ob_dim: int,
+                 n_layers: int,
+                 size: int,
+                 discrete: bool = False,
+                 learning_rate: float = 1e-4,
+                 training: bool = True,
+                 nn_baseline: bool = False,
                  **kwargs
                  ):
-        sup
-er().__init__(**kwargs)
+        super().__init__(**kwargs)
 
-        # init vars
+        # init varss
         self.ac_dim = ac_dim
         self.ob_dim = ob_dim
         self.n_layers = n_layers
@@ -75,7 +74,7 @@ er().__init__(**kwargs)
                 n_layers=self.n_layers,
                 size=self.size,
             )
-            self.logits_na.to(ptu.device)
+            self.c.to(ptu.device)
             self.mean_net = None
             self.logstd = None
             self.optimizer = optim.Adam(self.logits_na.parameters(),
@@ -100,7 +99,7 @@ er().__init__(**kwargs)
 
     ##################################
 
-    def save(self, filepath):
+    def save(self, filepath: str) -> None:
         """
         :param filepath: path to save MLP
         """
@@ -119,11 +118,13 @@ er().__init__(**kwargs)
         else:
             observation = obs[None]
 
-        # TODO return the action that the policy prescribes
-        raise NotImplementedError
+        # DONE: return the action that the policy prescribes
+        distrib = self.forward(observation)
+        action = distrib.sample()
+        return action
 
 
-    def forward(self, observation: torch.FloatTensor) -> Any:
+    def forward(self, observation: torch.FloatTensor) -> distributions.Distribution:
         """
         Defines the forward pass of the network
 
@@ -131,14 +132,23 @@ er().__init__(**kwargs)
         :return:
             action: sampled action(s) from the policy
         """
-        # TODO: implement the forward pass of the network.
+        # DONE: implement the forward pass of the network.
         # You can return anything you want, but you should be able to differentiate
         # through it. For example, you can return a torch.FloatTensor. You can also
         # return more flexible objects, such as a
         # `torch.distributions.Distribution` object. It's up to you!
-        raise NotImplementedError
 
-    def update(self, observations, actions):
+        distrib = None
+        if self.discrete:
+            logits = self.logits_na(observation)
+            distrib = distributions.categorical.Categorical(logits=logits)
+        else:
+            means = self.mean_net(observation)
+            std = torch.exp(self.logstd)
+            distrib = distributions.multivariate_normal.MultivariateNormal(loc=means, covariance_matrix=std * torch.eye(self.ac_dim))
+        return distrib
+
+    def update(self, observations: np.ndarray, actions: np.ndarray) -> dict:
         """
         Updates/trains the policy
 
@@ -147,8 +157,22 @@ er().__init__(**kwargs)
         :return:
             dict: 'Training Loss': supervised learning loss
         """
-        # TODO: update the policy and return the loss
-        loss = TODO
+        # DONE? update the policy and return the loss
+        loss = []
+        for i in range(observations.shape[0]):
+            obs = observations[i]
+            pred_action = self.get_action(obs)
+            action = actions[i]
+
+            # Compute loss
+            if self.discrete:
+                loss.append(int(action == pred_action))
+            else:
+                mse = nn.MSELoss()
+                loss.append(mse(action, pred_action))
+
+            # TODO: Train the network
+
         return {
             # You can add extra logging information here, but keep this line
             'Training Loss': ptu.to_numpy(loss),
