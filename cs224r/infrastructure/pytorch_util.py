@@ -4,12 +4,12 @@ Functions to edit:
 '''
 
 
-from typing import Union
+from typing import Tuple
 
 import torch
 from torch import nn
 
-Activation = Union[str, nn.Module]
+Activation = Tuple[str, nn.Module]
 
 
 _str_to_activation = {
