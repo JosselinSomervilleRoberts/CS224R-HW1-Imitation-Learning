@@ -8,6 +8,7 @@ from typing import Tuple
 
 import torch
 from torch import nn
+import numpy as np
 
 Activation = Tuple[str, nn.Module]
 
@@ -53,13 +54,27 @@ def build_mlp(
 
     # TODO: return a MLP. This should be an instance of nn.Module
     # Note: nn.Sequential is an instance of nn.Module.
-    raise NotImplementedError
+
+    # First Layer
+    layers = [nn.Linear(input_size, size), activation]
+
+    # Hidden Layers
+    for _ in range(n_layers-1):
+        layers.append(nn.Linear(size, size))
+        layers.append(activation)
+
+    # Output Layer
+    layers.append(nn.Linear(size, output_size))
+    layers.append(output_activation)
+
+    mlp = nn.Sequential(*layers)
+    return mlp
 
 
 device = None
 
 
-def init_gpu(use_gpu=True, gpu_id=0):
+def init_gpu(use_gpu: bool = True, gpu_id: int = 0) -> None:
     global device
     if torch.cuda.is_available() and use_gpu:
         device = torch.device("cuda:" + str(gpu_id))
@@ -69,13 +84,13 @@ def init_gpu(use_gpu=True, gpu_id=0):
         print("GPU not detected. Defaulting to CPU.")
 
 
-def set_device(gpu_id):
+def set_device(gpu_id: int) -> None:
     torch.cuda.set_device(gpu_id)
 
 
-def from_numpy(*args, **kwargs):
+def from_numpy(*args, **kwargs) -> torch.FloatTensor:
     return torch.from_numpy(*args, **kwargs).float().to(device)
 
 
-def to_numpy(tensor):
+def to_numpy(tensor: torch.FloatTensor) -> np.ndarray:
     return tensor.to('cpu').detach().numpy()

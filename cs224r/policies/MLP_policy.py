@@ -121,6 +121,7 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         # DONE: return the action that the policy prescribes
         distrib = self.forward(observation)
         action = distrib.sample()
+        action = ptu.to_numpy(action)
         return action
 
 
