@@ -12,6 +12,7 @@ from typing import Tuple
 import gym
 from cs224r.policies.base_policy import BasePolicy
 from typing import List
+from tqdm import tqdm
 
 ############################################
 ############################################
@@ -96,7 +97,7 @@ def sample_n_trajectories(env: gym.Env, policy: BasePolicy, ntraj: int,
     """
     paths = []
 
-    for _ in range(ntraj):
+    for _ in tqdm(range(ntraj), desc="Sampling trajectories"):
         path = sample_trajectory(env, policy, max_path_length, render)
         paths.append(path)
 

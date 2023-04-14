@@ -148,7 +148,7 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         else:
             means = self.mean_net(observation)
             std = torch.exp(self.logstd)
-            distrib = distributions.multivariate_normal.MultivariateNormal(loc=means, covariance_matrix=std * torch.eye(self.ac_dim))
+            distrib = distributions.multivariate_normal.MultivariateNormal(loc=means, covariance_matrix=torch.diag(std))
         return distrib
 
     def update(self, observations: np.ndarray, actions: np.ndarray) -> dict:
@@ -161,30 +161,18 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
             dict: 'Training Loss': supervised learning loss
         """
         # DONE? update the policy and return the loss
-        losses = []
-        criterion = nn.CrossEntropyLoss() if self.discrete else nn.MSELoss()
-        for i in range(observations.shape[0]):
-            obs = observations[i]
-            if len(obs.shape) > 1:
-                observation = obs
-            else:
-                observation = obs[None]
+        #observations = ptu.from_numpy(observations)
+        actions = ptu.from_numpy(actions)
+        distrib = self.forward(observations)
+        loss = -distrib.log_prob(actions).mean()
 
-            # DONE: return the action that the policy prescribes
-            distrib = self.forward(observation)
-            pred_action = distrib.rsample()
-            pred_action = pred_action.reshape(-1)
-
-            action = actions[i]
-            action = ptu.from_numpy(action)
-            loss = criterion(pred_action, action)
-            # print("Action:", action, " / Pred:", pred_action, " / Loss:", loss)
-            losses = loss
-            loss.backward()
-            self.optimizer.step()
+        # update the policy
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
 
         return {
             # You can add extra logging information here, but keep this line
-            'Training Loss': ptu.to_numpy(losses),
+            'Training Loss': ptu.to_numpy(loss),
         }
 

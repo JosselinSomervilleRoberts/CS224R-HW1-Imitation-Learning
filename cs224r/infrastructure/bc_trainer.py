@@ -214,13 +214,13 @@ class BCTrainer:
                 loaded_paths = pickle.load(f)
                 return loaded_paths, 0, None
         elif load_initial_expertdata is None: # Case (2)
-            envsteps_this_batch = self.params['batch_size_initial']
-            paths = utils.sample_n_trajectories(self.env, collect_policy,
-                envsteps_this_batch, self.params['ep_len'], render=False)
+            batch_size = self.params['batch_size_initial']
+            paths, envsteps_this_batch = utils.sample_trajectories(self.env, collect_policy,
+                batch_size, self.params['ep_len'], render=False)
         else: # Not the first iteration, i.e. Case (3)
-            envsteps_this_batch = self.params['batch_size']
-            paths = utils.sample_n_trajectories(self.env, collect_policy,
-                envsteps_this_batch, self.params['ep_len'], render=False)
+            batch_size = self.params['batch_size']
+            paths, envsteps_this_batch = utils.sample_trajectories(self.env, collect_policy,
+                batch_size, self.params['ep_len'], render=False)
 
 
         # collect more rollouts with the same policy, to be saved as videos in tensorboard
