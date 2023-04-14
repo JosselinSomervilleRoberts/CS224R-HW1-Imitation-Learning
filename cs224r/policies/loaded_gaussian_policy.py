@@ -97,7 +97,7 @@ class LoadedGaussianPolicy(BasePolicy, nn.Module):
             observation = obs
         else:
             observation = obs[None, :]
-        observation = ptu.from_numpy(observation.astype(np.float32))
+        observation = ptu.from_numpy(observation.astype(np.float32)).cpu()
         action = self(observation)
         return ptu.to_numpy(action)
 
