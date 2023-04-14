@@ -160,7 +160,7 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         :return:
             dict: 'Training Loss': supervised learning loss
         """
-        # DONE? update the policy and return the loss
+        # DONE: update the policy and return the loss
         #observations = ptu.from_numpy(observations)
         actions = ptu.from_numpy(actions)
         distrib = self.forward(observations)

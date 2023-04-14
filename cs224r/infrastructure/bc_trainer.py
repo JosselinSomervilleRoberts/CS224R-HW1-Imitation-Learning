@@ -195,7 +195,7 @@ class BCTrainer:
             train_video_paths: paths which also contain videos for visualization purposes
         """
 
-        # DONE? decide whether to load training data or use the current policy to collect more data
+        # DONE: decide whether to load training data or use the current policy to collect more data
         # HINT1: depending on if it's the first iteration or not, decide whether to either
             # (1) If it is the first iteration and training data exists, load it
             # In this case you can directly return as follows
