@@ -164,7 +164,13 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         #observations = ptu.from_numpy(observations)
         actions = ptu.from_numpy(actions)
         distrib = self.forward(observations)
-        loss = -distrib.log_prob(actions).mean()
+
+        # MSE Loss
+        criterion = nn.CrossEntropyLoss() if self.discrete else nn.MSELoss()
+        loss = criterion(distrib.rsample(), actions)
+
+        # KL - divergence
+        #loss = -distrib.log_prob(actions).mean()
 
         # update the policy
         self.optimizer.zero_grad()
