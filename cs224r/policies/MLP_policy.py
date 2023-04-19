@@ -166,11 +166,11 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         distrib = self.forward(observations)
 
         # MSE Loss
-        criterion = nn.CrossEntropyLoss() if self.discrete else nn.MSELoss()
-        loss = criterion(distrib.rsample(), actions)
+        # criterion = nn.CrossEntropyLoss() if self.discrete else nn.MSELoss()
+        # loss = criterion(distrib.rsample(), actions)
 
         # KL - divergence
-        #loss = -distrib.log_prob(actions).mean()
+        loss = -distrib.log_prob(actions).mean()
 
         # update the policy
         self.optimizer.zero_grad()

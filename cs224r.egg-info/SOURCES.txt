@@ -1,3 +1,4 @@
+.gitignore
 README.md
 colab_instructions.md
 installation.md
